@@ -1,0 +1,6 @@
+<!doctype html>
+{% if user %}
+    <div>Hello <strong>{{user}}</strong> (<a href="{{ url_for('.logout') }}">Log Out</a>)</div>
+{% else %}
+    <br><a href="{{ url_for('.login') }}">Log in</a>
+{% endif %}
