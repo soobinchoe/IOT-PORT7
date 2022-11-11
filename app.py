@@ -1,6 +1,7 @@
 from authlib.integrations.flask_client import OAuth
 from flask import Flask, redirect, session, url_for, render_template
 from flask_cors import CORS
+from sense_hat import SenseHat
 
 app = Flask(__name__)
 
@@ -21,7 +22,34 @@ github = oauth.register(
 @app.route('/')
 def hello_world():
     user = dict(session).get('user', None)
+    if user:
+        # display_user(user)
+        display_icon()
     return render_template('main.html', user=user)
+
+
+def display_user(user):
+    sense = SenseHat()
+    sense.show_message(user)
+
+
+def display_icon():
+    sense = SenseHat()
+    p = (255, 168, 168)  # pink
+    b = (0, 0, 0)  # Black
+
+    creeper_pixels = [
+        b, b, b, b, b, b, b, b,
+        b, b, p, b, b, p, b, b,
+        b, p, b, p, p, b, p, b,
+        b, p, b, b, b, b, p, b,
+        b, p, b, b, b, b, p, b,
+        b, b, p, b, b, p, b, b,
+        b, b, b, p, p, b, b, b,
+        b, b, b, b, b, b, b, b
+    ]
+
+    sense.set_pixels(creeper_pixels)
 
 
 @app.route('/login')
@@ -37,8 +65,12 @@ def authorize():
     session['user'] = profile['login']
     return redirect('/')
 
+
 @app.route('/logout')
 def logout():
     session['user'] = None
     return redirect('/')
 
+
+if __name__ == '__main__':
+    app.run(host="pi-17.local", port=8000, debug=True)
